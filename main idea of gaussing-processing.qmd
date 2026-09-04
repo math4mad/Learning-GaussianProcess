@@ -1,0 +1,114 @@
+---
+title: "Main Idea of Gaussian processing"
+subtitle: "理解高斯过程的几个视角"
+jupyter: learning-gp
+bibliography: ref.bib
+---
+
+## 数学视角
+正如在[Gaussian Processes for Dummies](https://katbailey.github.io/post/gaussian-processes-for-dummies/) 最后部分,有网友回复到, 我没学到任何东西. 
+用数学的方法来描述就是, 这个读者的对高斯过程认知的心智部分和概念本身的"距离"过大. 
+我想要说距离这个概念就是理解高斯过程的关键点.  
+
+我们来举个例子,来看看距离到底讲的是什么问题.  对于$sin(x)$ 函数,学过中学数学的学生在熟悉不过了. 
+
+现在比较两个相距很远、但相差一个完整周期的输入：$x=1$ 和 $x=1+2\pi$。它们的函数值相同，因为 $\sin(x+2\pi)=\sin(x)$。
+
+```{python}
+#| label: fig-close-points
+#| fig-cap: "Two close inputs and their nearby sine values."
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(-2 * np.pi, 2 * np.pi, 600)
+inputs = np.array([1.00, 1.001])
+values = np.sin(inputs)
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.plot(x, np.sin(x), color="#126782", label=r"$\sin(x)$")
+ax.scatter(inputs, values, color="#b34d22", s=70, zorder=3, label="Close points")
+
+for input_value, function_value in zip(inputs, values):
+    ax.annotate(
+        f"({input_value:.3f}, {function_value:.6f})",
+        (input_value, function_value),
+        xytext=(8, 10),
+        textcoords="offset points",
+    )
+
+ax.set(
+    xlabel="Input x",
+    ylabel=r"$\sin(x)$",
+    title=r"Close inputs produce close values",
+    xticks=[-2 * np.pi, -np.pi, 0, np.pi, 2 * np.pi],
+    xticklabels=[r"$-2\pi$", r"$-\pi$", "0", r"$\pi$", r"$2\pi$"],
+)
+ax.legend()
+plt.show()
+```
+
+
+
+
+
+图 1 展示了一个最简单的“距离”例子：$x=1.000$ 和 $x=1.001$ 在输入空间中非常接近，对应的函数值也非常接近。这里的函数值差约为 $0.000540$。高斯过程中的核函数正是用这种方式描述相似性：输入点越近，模型通常越相信它们的函数值相关。
+
+::: {.callout-note}
+上面这段话是由 GPT-5.6 luna 帮我自动生成的. 看来她已近明白了我的意思. 这说明在对高斯过程的理解上, GPT 的心智和概念本身的距离是非常近的. 
+:::
+
+对于生活在$sin(x)$ 函数曲线上的生物, 一般来说他们住的越近(距离越近), 他们通过函数反映出的一些特性就越像是. 注意我是说一般来讲. 但是对于$sin(x)$ 来讲. 距离非常远的两个点,通过函数反映出特性可能也会相近. 这种周期性的特性, 我们在中学已经学过了. 在高斯过程中使用周期核函数, 不仅能描述近距离点之间的习性, 也能捕捉到远距离点的相似的习性.  
+
+See @fig-distance-points for the distant points with the same sine value.
+  
+```{python}
+#| label: fig-distance-points
+#| fig-cap: "Two distant inputs have the same sine value after one complete period."
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(-4 * np.pi, 4 * np.pi, 1200)
+inputs = np.array([1.00, 1.00 + 2 * np.pi])
+values = np.sin(inputs)
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.plot(x, np.sin(x), color="#126782", label=r"$\sin(x)$")
+ax.scatter(inputs, values, color="#b34d22", s=70, zorder=3, label="Periodic points")
+ax.hlines(
+    values[0],
+    inputs[0],
+    inputs[1],
+    color="#b34d22",
+    linestyle=":",
+    linewidth=2,
+    label="Same function value",
+)
+
+for input_value, function_value in zip(inputs, values):
+    ax.annotate(
+        f"({input_value:.3f}, {function_value:.6f})",
+        (input_value, function_value),
+        xytext=(8, 10),
+        textcoords="offset points",
+    )
+
+ax.set(
+	xlabel="Input x",
+	ylabel=r"$\sin(x)$",
+    title=r"Distant points can share a value: $\sin(x)=\sin(x+2\pi)$",
+	xticks=[-4 * np.pi, -3 * np.pi, -2 * np.pi, -np.pi, 0, np.pi, 2 * np.pi, 3 * np.pi, 4 * np.pi],
+    xticklabels=[r"$-4\pi$", r"$-3\pi$", r"$-2\pi$", r"$-\pi$", "0", r"$\pi$", r"$2\pi$", r"$3\pi$", r"$4\pi$"],
+)
+ax.legend()
+plt.show()
+```
+
+| Input $x$ | Value $\sin(x)$ |
+|---:|---:|
+| 1.000 | 0.841471 |
+| 7.283 ($1+2\pi$) | 0.841471 |
+The input distance is $2\pi\approx6.283$, but the function-value distance is approximately $0$. The horizontal dotted line makes this value similarity visible even though the points are far apart on the x-axis. A periodic kernel in a Gaussian process can represent this kind of long-distance similarity.
+
+
