@@ -48,10 +48,6 @@ ax.legend()
 plt.show()
 ```
 
-
-
-
-
 图 1 展示了一个最简单的“距离”例子：$x=1.000$ 和 $x=1.001$ 在输入空间中非常接近，对应的函数值也非常接近。这里的函数值差约为 $0.000540$。高斯过程中的核函数正是用这种方式描述相似性：输入点越近，模型通常越相信它们的函数值相关。
 
 ::: {.callout-note}
@@ -95,10 +91,10 @@ for input_value, function_value in zip(inputs, values):
     )
 
 ax.set(
-	xlabel="Input x",
-	ylabel=r"$\sin(x)$",
+    xlabel="Input x",
+    ylabel=r"$\sin(x)$",
     title=r"Distant points can share a value: $\sin(x)=\sin(x+2\pi)$",
-	xticks=[-4 * np.pi, -3 * np.pi, -2 * np.pi, -np.pi, 0, np.pi, 2 * np.pi, 3 * np.pi, 4 * np.pi],
+    xticks=[-4 * np.pi, -3 * np.pi, -2 * np.pi, -np.pi, 0, np.pi, 2 * np.pi, 3 * np.pi, 4 * np.pi],
     xticklabels=[r"$-4\pi$", r"$-3\pi$", r"$-2\pi$", r"$-\pi$", "0", r"$\pi$", r"$2\pi$", r"$3\pi$", r"$4\pi$"],
 )
 ax.legend()
@@ -112,3 +108,23 @@ plt.show()
 The input distance is $2\pi\approx6.283$, but the function-value distance is approximately $0$. The horizontal dotted line makes this value similarity visible even though the points are far apart on the x-axis. A periodic kernel in a Gaussian process can represent this kind of long-distance similarity.
 
 
+## 生活视角
+我们在生活中会用直尺度量高度和长度的差异.  但是仅仅这一种吗? 其实有各种不同的度量工具. 直尺本身也分为很多种. 有卷尺, 皮尺, 这是形式上的不同. 硬质的直尺也可以分公制, 英制等等. 用公制米尺和英制的尺子度量的不同值, 可能是同一个对象的同一种特性.   对于一个集合规定用同一种度量规范才可以比较性质.  同时还有很多种不同的度量工具, 例如: 速度表, 秒表, 水表, 电表等等.   我们在生活中的这些工具具有类似的性质, 也具有不同的特质.  共同的性质是把世界上不对象的性质放在一起比价. 就像正弦函数上的靠近的点, 或者距离遥远的点, 通过数值的比较会反映出一些类似的习性.   函数和生物一样也通过临近的点探索未知的世界. 
+
+我曾经观察到一只很小的尺蠖虫, 它似乎要到另外一个树枝上觅食, 所以它就沿着正在爬的这个数值, 一步一步的慢慢探索这往下走. 它可能看不到树上全部的情况, 唯一能做的就是在当前点的附近进行搜索.确定的是它现在的位置, 没有掉下树枝,所以附近的点应该是安全的. 尺蠖虫用自己的脚来感知世界. 
+
+![一只尺蠖虫在树枝上爬行](https://commons.wikimedia.org/wiki/Special:FilePath/Inchworm.jpg){fig-alt="一只尺蠖虫在树枝上爬行"}
+
+图片来源：[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Inchworm.jpg)。
+
+
+
+生活的实例告诉我们, 度量工具的形式和方法是各种各样的.  这一点在数学世界也同样如此. 
+
+[@bradley2020category] 在博客里谈到,  数学就是:[It's all about relationships!](https://www.math3ma.com/blog/what-is-category-theory-anyway) . 
+我们通过各种度量工具就是要反映出对象之间的关系(相同, 不同). 
+
+::: {.callout-note}
+[Mathematical objects are determined by--and understood by--the network of relationships they enjoy with all the other objects of their species.
+- Barry Mazur](https://www.math3ma.com/blog/what-is-category-theory-anyway)
+:::

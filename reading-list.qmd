@@ -18,6 +18,7 @@ This list collects resources for learning Gaussian processes, with an emphasis o
 - [Gaussian Processes for Dummies](https://katbailey.github.io/post/gaussian-processes-for-dummies/) gives an accessible introduction to the main intuition.
 - [An introduction to Gaussian Processes](https://ekamperi.github.io/mathematics/2021/03/30/gaussian-process-regression.html) walks through the mathematics of GP regression [@ekamperi2021].
 - [Unraveling spectral properties of kernel matrices - I](https://francisbach.com/spectrum-kernel-matrices-i/) and [Part II](https://francisbach.com/spectrum-kernel-matrices-ii/) connect kernel matrices with spectral viewpoints [@bach2023a; @bach2023b].
+- [What Is Category Theory, Anyway?](https://www.math3ma.com/blog/what-is-category-theory-anyway) offers an accessible introduction to thinking about mathematical structure and relationships [@bradley2020category].
 
 ## Interactive tools
 
