@@ -22,6 +22,6 @@ jobs:
       - name: Publish to gh-pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
-          to: gh-pages
+          target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
