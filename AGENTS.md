@@ -27,6 +27,10 @@ Keep lessons reproducible, beginner-friendly, and focused on Gaussian-process co
 - Use Polars rather than pandas for new tabular workflows unless an external API requires another format.
 - Avoid adding dependencies without documenting them in the project's dependency configuration.
 
+## User-authored comments
+
+- Do not modify the user's comment inside the existing `::: {.callout-note}` block in `main idea of gaussing-processing.qmd`. Treat that block, including its delimiters and text, as user-owned content.
+
 ## Git workflow
 
 - Do feature work on the `at-working` branch.
