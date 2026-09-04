@@ -1,0 +1,5 @@
+great-tables
+ipykernel
+matplotlib
+polars
+scikit-learn

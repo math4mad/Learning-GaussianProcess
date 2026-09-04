@@ -1,0 +1,121 @@
+---
+title: "Gaussian Process Regression"
+subtitle: "A first look at predictions and uncertainty"
+jupyter: learning-gp
+---
+
+Gaussian process (GP) regression models a distribution over smooth functions. Instead of returning only one fitted curve, it gives a predictive mean and a measure of uncertainty at every input value.
+
+## The experiment
+
+We will generate noisy observations from a sine curve, fit a GP using an RBF kernel, and compare the model's prior and posterior predictions. The random seed makes the data and results reproducible.
+
+```{python}
+#| label: setup
+#| echo: true
+
+import matplotlib.pyplot as plt
+import numpy as np
+import polars as pl
+from IPython.display import display
+from great_tables import GT
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel
+
+rng = np.random.default_rng(7)
+x_train = np.linspace(0, 10, 12).reshape(-1, 1)
+y_train = np.sin(x_train).ravel() + rng.normal(0, 0.18, size=x_train.shape[0])
+x_plot = np.linspace(-1, 11, 300).reshape(-1, 1)
+
+plt.style.use("seaborn-v0_8-whitegrid")
+```
+
+The training inputs cover the interval $[0, 10]$. The plot extends beyond that interval so we can see how the model expresses more uncertainty when it is asked to extrapolate.
+
+## Prior intuition
+
+Before seeing data, an RBF kernel says that nearby inputs should have similar function values. The length scale controls how quickly that similarity fades.
+
+```{python}
+#| label: prior
+#| fig-cap: "Prior mean and uncertainty from the RBF kernel."
+
+prior_kernel = RBF(length_scale=1.2)
+prior_mean = np.zeros(x_plot.shape[0])
+prior_std = np.sqrt(np.diag(prior_kernel(x_plot)))
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.fill_between(
+    x_plot.ravel(),
+    prior_mean - 1.96 * prior_std,
+    prior_mean + 1.96 * prior_std,
+    color="#cfe8f3",
+    alpha=0.8,
+    label="95% prior interval",
+)
+ax.plot(x_plot, prior_mean, color="#126782", label="Prior mean")
+ax.set(xlabel="Input x", ylabel="Function value")
+ax.legend()
+plt.show()
+```
+
+## Fit the posterior
+
+The `WhiteKernel` represents observation noise. Setting `normalize_y=True` helps the GP work with the scale of this small example, while `n_restarts_optimizer` gives the kernel optimizer a few starting points to try.
+
+```{python}
+#| label: posterior
+#| fig-cap: "Posterior predictions with a 95% predictive interval."
+
+kernel = RBF(length_scale=1.2) + WhiteKernel(noise_level=0.03)
+model = GaussianProcessRegressor(
+    kernel=kernel,
+    normalize_y=True,
+    n_restarts_optimizer=3,
+    random_state=7,
+)
+model.fit(x_train, y_train)
+
+mean, std = model.predict(x_plot, return_std=True)
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.fill_between(
+    x_plot.ravel(),
+    mean - 1.96 * std,
+    mean + 1.96 * std,
+    color="#f4c6a6",
+    alpha=0.7,
+    label="95% predictive interval",
+)
+ax.plot(x_plot, mean, color="#b34d22", label="Posterior mean")
+ax.scatter(x_train, y_train, color="#243746", zorder=3, label="Training observations")
+ax.set(xlabel="Input x", ylabel="Function value")
+ax.legend()
+plt.show()
+```
+
+Near the observations, the posterior interval narrows because the data constrain the possible functions. Outside the training range, it widens again: the model is appropriately less certain about extrapolation.
+
+The optimizer also updates the kernel hyperparameters. This compact table makes the fitted kernel easy to inspect.
+
+```{python}
+#| label: fitted-kernel
+#| echo: true
+
+summary = pl.DataFrame(
+    {
+        "quantity": ["fitted kernel", "log marginal likelihood"],
+        "value": [str(model.kernel_), f"{model.log_marginal_likelihood():.3f}"],
+    }
+)
+display(GT(summary).tab_header(title="Fitted Gaussian-process model"))
+```
+
+## What to notice
+
+- The **mean** is the model's central prediction after conditioning on the observations.
+- The **predictive interval** communicates uncertainty, rather than hiding it behind a single line.
+- The kernel encodes a smoothness assumption. A shorter RBF length scale would allow the curve to change more quickly.
+- Hyperparameter optimization chooses kernel settings that make the observed data plausible under the GP model.
+
+This is the basic GP workflow: choose a covariance structure, condition it on observations, and inspect both predictions and uncertainty.
