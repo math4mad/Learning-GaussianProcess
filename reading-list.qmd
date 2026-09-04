@@ -1,0 +1,37 @@
+---
+title: "Gaussian Process Reading List"
+description: "Books, articles, and interactive tools for learning Gaussian processes."
+bibliography: ref.bib
+---
+
+This list collects resources for learning Gaussian processes, with an emphasis on intuition, kernels, regression, and visual understanding. The groups follow the original reading notes.
+
+## Books
+
+- *Gaussian Processes for Machine Learning* is the standard mathematical and practical reference for GP models, kernels, and inference [@rasmussen2006]. The full text is available online from the authors.
+- *Kernel Methods and Machine Learning* is a useful companion for the broader kernel-methods perspective.
+- *Automatic Model Construction with Gaussian Processes* develops compositional approaches for building GP models [@duvenaud2014].
+- *Kernel Methods for Machine Learning with Math and Python: 100 Exercises for Building Logic* provides an exercise-oriented route through kernel ideas and implementations.
+
+## Web articles
+
+- [Gaussian Processes for Dummies](https://katbailey.github.io/post/gaussian-processes-for-dummies/) gives an accessible introduction to the main intuition.
+- [An introduction to Gaussian Processes](https://ekamperi.github.io/mathematics/2021/03/30/gaussian-process-regression.html) walks through the mathematics of GP regression [@ekamperi2021].
+- [Unraveling spectral properties of kernel matrices - I](https://francisbach.com/spectrum-kernel-matrices-i/) and [Part II](https://francisbach.com/spectrum-kernel-matrices-ii/) connect kernel matrices with spectral viewpoints [@bach2023a; @bach2023b].
+
+## Interactive tools
+
+- [Interactive Gaussian Process Visualization](https://www.infinitecuriosity.org/vizgp/) lets you explore how observations change a GP posterior.
+- [A Visual Exploration of Gaussian Processes](https://distill.pub/2019/visual-exploration-gaussian-processes/) uses interactive explanations to build intuition for priors, kernels, and posteriors [@google2019].
+- [Visualization of Gaussian Process regression](https://smlbook.org/GP/) provides an online visual companion to the GP regression material in *Machine Learning: A Probabilistic Perspective* [@murphy2012].
+
+## Suggested order
+
+1. Start with the visual exploration and introductory articles to develop intuition.
+2. Work through the regression demo on this site and compare its prior and posterior plots with the interactive tools.
+3. Use *Gaussian Processes for Machine Learning* as the main reference while experimenting with kernels and hyperparameters.
+4. Return to the spectral articles and compositional-modeling material once the basic GP workflow is familiar.
+
+## References
+
+The citation records for this page are stored in [`ref.bib`](ref.bib).

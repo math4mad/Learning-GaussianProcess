@@ -1,5 +1,7 @@
 project:
   type: website
+  render:
+    - "*.qmd"
 
 website:
   title: "Learning-GaussianProcess"
@@ -9,6 +11,8 @@ website:
         text: Home
       - href: gaussian-process-regression.qmd
         text: Regression demo
+      - href: reading-list.qmd
+        text: Reading list
       - about.qmd
 
 format:
