@@ -1,7 +1,5 @@
 .venv/
 _site/
 .quarto/
-__pycache__//.quarto/
+__pycache__/
 **/*.quarto_ipynb
-
-/.quarto/
