@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "gaussian-process-regression.html",
+    "href": "gaussian-process-regression.html",
+    "title": "Gaussian Process Regression",
+    "section": "",
+    "text": "Gaussian process (GP) regression models a distribution over smooth functions. Instead of returning only one fitted curve, it gives a predictive mean and a measure of uncertainty at every input value."
+  },
+  {
+    "objectID": "gaussian-process-regression.html#the-experiment",
+    "href": "gaussian-process-regression.html#the-experiment",
+    "title": "Gaussian Process Regression",
+    "section": "The experiment",
+    "text": "The experiment\nWe will generate noisy observations from a sine curve, fit a GP using an RBF kernel, and compare the model’s prior and posterior predictions. The random seed makes the data and results reproducible.\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport polars as pl\nfrom IPython.display import display\nfrom great_tables import GT\nfrom sklearn.gaussian_process import GaussianProcessRegressor\nfrom sklearn.gaussian_process.kernels import RBF, WhiteKernel\n\nrng = np.random.default_rng(7)\nx_train = np.linspace(0, 10, 12).reshape(-1, 1)\ny_train = np.sin(x_train).ravel() + rng.normal(0, 0.18, size=x_train.shape[0])\nx_plot = np.linspace(-1, 11, 300).reshape(-1, 1)\n\nplt.style.use(\"seaborn-v0_8-whitegrid\")\n\nThe training inputs cover the interval \\([0, 10]\\). The plot extends beyond that interval so we can see how the model expresses more uncertainty when it is asked to extrapolate."
+  },
+  {
+    "objectID": "gaussian-process-regression.html#prior-intuition",
+    "href": "gaussian-process-regression.html#prior-intuition",
+    "title": "Gaussian Process Regression",
+    "section": "Prior intuition",
+    "text": "Prior intuition\nBefore seeing data, an RBF kernel says that nearby inputs should have similar function values. The length scale controls how quickly that similarity fades.\n\nprior_kernel = RBF(length_scale=1.2)\nprior_mean = np.zeros(x_plot.shape[0])\nprior_std = np.sqrt(np.diag(prior_kernel(x_plot)))\n\nfig, ax = plt.subplots(figsize=(8, 4.5))\nax.fill_between(\n    x_plot.ravel(),\n    prior_mean - 1.96 * prior_std,\n    prior_mean + 1.96 * prior_std,\n    color=\"#cfe8f3\",\n    alpha=0.8,\n    label=\"95% prior interval\",\n)\nax.plot(x_plot, prior_mean, color=\"#126782\", label=\"Prior mean\")\nax.set(xlabel=\"Input x\", ylabel=\"Function value\")\nax.legend()\nplt.show()\n\n\n\n\nPrior mean and uncertainty from the RBF kernel."
+  },
+  {
+    "objectID": "gaussian-process-regression.html#fit-the-posterior",
+    "href": "gaussian-process-regression.html#fit-the-posterior",
+    "title": "Gaussian Process Regression",
+    "section": "Fit the posterior",
+    "text": "Fit the posterior\nThe WhiteKernel represents observation noise. Setting normalize_y=True helps the GP work with the scale of this small example, while n_restarts_optimizer gives the kernel optimizer a few starting points to try.\n\nkernel = RBF(length_scale=1.2) + WhiteKernel(noise_level=0.03)\nmodel = GaussianProcessRegressor(\n    kernel=kernel,\n    normalize_y=True,\n    n_restarts_optimizer=3,\n    random_state=7,\n)\nmodel.fit(x_train, y_train)\n\nmean, std = model.predict(x_plot, return_std=True)\n\nfig, ax = plt.subplots(figsize=(8, 4.5))\nax.fill_between(\n    x_plot.ravel(),\n    mean - 1.96 * std,\n    mean + 1.96 * std,\n    color=\"#f4c6a6\",\n    alpha=0.7,\n    label=\"95% predictive interval\",\n)\nax.plot(x_plot, mean, color=\"#b34d22\", label=\"Posterior mean\")\nax.scatter(x_train, y_train, color=\"#243746\", zorder=3, label=\"Training observations\")\nax.set(xlabel=\"Input x\", ylabel=\"Function value\")\nax.legend()\nplt.show()\n\n/Users/lunarcheung/Desktop/Learning-GaussianProcess/.venv/lib/python3.14/site-packages/sklearn/gaussian_process/kernels.py:445: ConvergenceWarning: The optimal value found for dimension 0 of parameter k2__noise_level is close to the specified lower bound 1e-05. Decreasing the bound and calling fit again may find a better value.\n  warnings.warn(\n\n\n\n\n\nPosterior predictions with a 95% predictive interval.\n\n\n\n\nNear the observations, the posterior interval narrows because the data constrain the possible functions. Outside the training range, it widens again: the model is appropriately less certain about extrapolation.\nThe optimizer also updates the kernel hyperparameters. This compact table makes the fitted kernel easy to inspect.\n\nsummary = pl.DataFrame(\n    {\n        \"quantity\": [\"fitted kernel\", \"log marginal likelihood\"],\n        \"value\": [str(model.kernel_), f\"{model.log_marginal_likelihood():.3f}\"],\n    }\n)\ndisplay(GT(summary).tab_header(title=\"Fitted Gaussian-process model\"))\n\n\n\n\n\n\n\nFitted Gaussian-process model\n\n\nquantity\nvalue\n\n\n\n\nfitted kernel\nRBF(length_scale=1.26) + WhiteKernel(noise_level=1e-05)\n\n\nlog marginal likelihood\n-9.168"
+  },
+  {
+    "objectID": "gaussian-process-regression.html#what-to-notice",
+    "href": "gaussian-process-regression.html#what-to-notice",
+    "title": "Gaussian Process Regression",
+    "section": "What to notice",
+    "text": "What to notice\n\nThe mean is the model’s central prediction after conditioning on the observations.\nThe predictive interval communicates uncertainty, rather than hiding it behind a single line.\nThe kernel encodes a smoothness assumption. A shorter RBF length scale would allow the curve to change more quickly.\nHyperparameter optimization chooses kernel settings that make the observed data plausible under the GP model.\n\nThis is the basic GP workflow: choose a covariance structure, condition it on observations, and inspect both predictions and uncertainty."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Learning-GaussianProcess",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  }
+]
